@@ -9,13 +9,13 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <router-link class="nav-link" aria-current="page" :to="{name: 'pk_index'}">对战</router-link>
+            <router-link :class="route_name == 'pk_index' ? 'nav-link active' : 'nav-link'" aria-current="page" :to="{name: 'pk_index'}">对战</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name: 'record_index'}">对局列表</router-link>
+            <router-link :class="route_name == 'record_index' ? 'nav-link active' : 'nav-link'" :to="{name: 'record_index'}">对局列表</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name: 'ranklist_index'}">排行榜</router-link>
+            <router-link :class="route_name == 'ranklist_index' ? 'nav-link active' : 'nav-link'" :to="{name: 'ranklist_index'}">排行榜</router-link>
           </li>
         </ul>
         <ul class="navbar-nav">
@@ -24,7 +24,7 @@
               Aubrey Chen
             </a>
             <ul class="dropdown-menu dropdown-menu-dark">
-              <li><router-link class="dropdown-item" :to="{name: 'user_bot_index'}">我的Bot</router-link></li>
+              <li><router-link :class="route_name == 'user_bot_index' ? 'dropdown-item active' : 'dropdown-item'" :to="{name: 'user_bot_index'}">我的Bot</router-link></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="#">退出</a></li>
             </ul>
@@ -36,7 +36,19 @@
 </template>
 
 <script>
+import { useRoute } from 'vue-router';
+import { computed } from 'vue';
 
+export default {
+  setup() {
+    const route = useRoute();
+    let route_name = computed(() => route.name);
+
+    return {
+      route_name, 
+    };
+  }
+};
 </script>
 
 <!-- <style>后加scoped的作用：在这个里面写的CSS它会加上一个随机字符串，使得这个样式不会影响到组件以外的部分 -->
