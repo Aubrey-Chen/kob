@@ -17,7 +17,7 @@ export default {
 
 <style>
 body {
-  background-image: url("@/assets/background.png");  /* @/···表示在当前目录的根目录 */
+  background-image: url("@/assets/images/background.png");  /* @/···表示在当前目录的根目录 */
   background-size: cover;
 }
 </style>
