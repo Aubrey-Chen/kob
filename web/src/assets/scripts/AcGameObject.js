@@ -7,6 +7,9 @@ export class AcGameObject {
     // 在创建新的游戏对象时将其存储在全局数组中，便于管理和遍历所有游戏对象。
     AC_GAME_OBJECTS.push(this);
 
+    // 当前帧执行的时刻，距离上一帧执行时刻的时间间隔Δ
+    this.timedelta = 0;
+
     // 记录方法是否执行过
     this.has_called_start = false;
   }
@@ -37,7 +40,22 @@ export class AcGameObject {
   }
 }
 
-const step = () => {
+let last_timestamp; // 上一次执行的时刻
+
+const step = timestamp => {
+  // 在JS里面用of遍历的是值，用in遍历的是下标
+  for (let obj of AC_GAME_OBJECTS) {
+    if (!obj.has_called_start) {
+      obj.has_called_start = true;
+      obj.start();
+    } else {
+      obj.timedelta = timestamp - last_timestamp;
+      obj.update();
+    }
+  }
+
+  last_timestamp = timestamp;  // 更新上一次执行的时刻
+
   // 继续执行动画回调函数
   requestAnimationFrame(step);
 }
