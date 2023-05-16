@@ -40,7 +40,8 @@ export class AcGameObject {
   }
 }
 
-let last_timestamp; // 上一次执行的时刻
+// 上一次执行的时刻
+let last_timestamp = performance.now(); // 使用 performance.now() 获取当前时间戳; 
 
 const step = timestamp => {
   // 在JS里面用of遍历的是值，用in遍历的是下标
