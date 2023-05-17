@@ -47,7 +47,7 @@ export default {
     return {
       route_name, 
     };
-  }
+  }, 
 };
 </script>
 
