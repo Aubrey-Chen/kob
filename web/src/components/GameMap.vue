@@ -33,5 +33,11 @@ export default {
   /* 与父元素等长 */
   width: 100%;
   height: 100%;
+  /* 居中 */
+  display: flex;
+  /* flex 里的内容水平居中 */
+  justify-content: center;
+  /* flex 里的内容垂直居中 */
+  align-items: center;
 }
 </style>
