@@ -37,8 +37,22 @@ export class GameMap extends AcGameObject {
 
   // 渲染
   render() {
-    // 绘制地图
-    this.ctx.fillStyle = 'green';
-    this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);  // 前两个参数是绘制的坐标，后两个参数是绘制的长宽
+    // 奇数color_even画深色格子，偶数color_odd画浅色格子
+    const color_even = "#AAD751", color_odd = "#A2D149";
+    for (let r = 0; r < this.rows; r ++ ) {
+      for (let c = 0; c < this.cols; c ++ ) {
+        if ((r + c) % 2 == 0) {
+          this.ctx.fillStyle = color_even;
+        } else {
+          this.ctx.fillStyle = color_odd;
+        }
+        // 绘制地图：前两个参数是绘制的坐标，后两个参数是绘制的长宽
+        this.ctx.fillRect(c * this.L, r * this.L, this.L, this.L);
+      }
+    }
+
+    // // 绘制地图
+    // this.ctx.fillStyle = 'green';
+    // this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);  // 前两个参数是绘制的坐标，后两个参数是绘制的长宽
   }
 }
