@@ -15,8 +15,9 @@ export class GameMap extends AcGameObject {
     this.rows = 13;     // 行数rows初始值为13
     this.cols = 13;     // 列数cols初始值为13
 
-    // 开辟数组用来存储所有的障碍物墙体
-    this.walls = [];
+
+    this.inner_walls_count = 70;  // 内部随机障碍物墙体的数量
+    this.walls = [];  // 开辟数组用来存储所有的障碍物墙体
   }
 
   create_walls() {
@@ -37,6 +38,27 @@ export class GameMap extends AcGameObject {
 
     for (let c = 0; c < this.cols; c ++ ) {
       g[0][c] = g[this.rows - 1][c] = true;  // 上下两边界加上墙体
+    }
+
+    // 轴对称地创建随机障碍物
+    for (let i = 0; i < this.inner_walls_count / 2; i ++ ) {  // 每次随机放两个障碍物，故循环条件需要除以2
+      // 循环1000次，只要有重复的格子就继续随机生成障碍物
+      for (let j = 0; j < 1000; j ++ ) {
+        // 获取行的随机值：得到(0, this.rows - 1]里的任意一个值
+        let r = parseInt(Math.random() * this.rows);
+        // 获取列的随机值：得到(0, this.cols - 1]里的任意一个值
+        let c = parseInt(Math.random() * this.cols);
+
+        // 如果取到的随机障碍物覆盖掉左下角或右上角蛇的初始位置，则继续随机获取
+        if (r == this.rows - 2 && c == 1 || r == 1 && c == this.cols -2)
+          continue;
+        // 如果获取的随机值已重复，则继续随机获取
+        if (g[r][c] || g[c][r]) 
+          continue;
+        
+        g[r][c] = g[c][r] = true;
+        break;
+      }
     }
 
     // 遍历整个数组g
