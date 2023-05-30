@@ -57,7 +57,7 @@ export class GameMap extends AcGameObject {
   update_size() {
     // 求一个能被格子框包含的rows行cols列的最大面积的矩形，边长为 min { h/rows, w/cols }
     // this.parent.clientWidth和this.parent.clientHeight是求<div>的长、宽
-    this.L = Math.min(this.parent.clientWidth / this.cols, this.parent.clientHeight / this.rows); 
+    this.L = parseInt(Math.min(this.parent.clientWidth / this.cols, this.parent.clientHeight / this.rows)); 
     // 求<canvas>的长width（宽height）：小正方形的边长L × 列数cols（行数rows）
     this.ctx.canvas.width = this.L * this.cols;
     this.ctx.canvas.height = this.L * this.rows;
@@ -85,8 +85,5 @@ export class GameMap extends AcGameObject {
       }
     }
 
-    // // 绘制地图
-    // this.ctx.fillStyle = 'green';
-    // this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);  // 前两个参数是绘制的坐标，后两个参数是绘制的长宽
   }
 }
