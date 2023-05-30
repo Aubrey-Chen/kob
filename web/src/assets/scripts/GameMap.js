@@ -1,4 +1,5 @@
 import { AcGameObject } from "./AcGameObject";
+import { Wall } from "./Wall";
 
 export class GameMap extends AcGameObject {
   // 构造函数的两个参数：1. 画布；2. 画布的父元素--用来动态修改画布的长宽。
@@ -13,10 +14,43 @@ export class GameMap extends AcGameObject {
     this.L = 0;     // L表示1个单位的长度，整个地图是 13个单位 × 13个单位 
     this.rows = 13;     // 行数rows初始值为13
     this.cols = 13;     // 列数cols初始值为13
+
+    // 开辟数组用来存储所有的障碍物墙体
+    this.walls = [];
+  }
+
+  create_walls() {
+    // 定义一个bool类型的数组，用来判断当前格子是否添加障碍物
+    const g = [];
+    // 初始化障碍物数组
+    for (let r = 0; r < this.rows; r ++ ) {
+      g[r] = [];
+      for (let c = 0; c < this.cols; c ++ ) {
+        g[r][c] = false;
+      }
+    }
+
+    // 给四周加上障碍物
+    for (let r = 0; r < this.rows; r ++ ) {
+      g[r][0] = g[r][this.cols - 1] = true;  // 左右两边界加上墙体
+    }
+
+    for (let c = 0; c < this.cols; c ++ ) {
+      g[0][c] = g[this.rows - 1][c] = true;  // 上下两边界加上墙体
+    }
+
+    // 遍历整个数组g
+    for (let r = 0; r < this.rows; r ++ ) {
+      for (let c = 0; c < this.cols; c ++ ) {
+        if (g[r][c]) {
+          this.walls.push(new Wall(r, c, this));
+        }
+      }
+    }
   }
 
   start() {
-
+    this.create_walls();
   }
 
   // 每一帧都更新一下边长

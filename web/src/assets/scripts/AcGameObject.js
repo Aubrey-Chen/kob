@@ -5,7 +5,7 @@ const AC_GAME_OBJECTS = [];
 export class AcGameObject {
   constructor() {
     // 在创建新的游戏对象时将其存储在全局数组中，便于管理和遍历所有游戏对象。
-    AC_GAME_OBJECTS.push(this);
+    AC_GAME_OBJECTS.push(this);  // 每创建一个对象，就push一个。先创建的先push先执行update()
 
     // 当前帧执行的时刻，距离上一帧执行时刻的时间间隔Δ
     this.timedelta = 0;
