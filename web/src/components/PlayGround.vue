@@ -22,6 +22,5 @@ export default {
   height: 70vh;
   /* 距离上边距40px居中 */
   margin: 40px auto;
-  background: lightblue;
 }
 </style>

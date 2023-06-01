@@ -16,8 +16,27 @@ export class GameMap extends AcGameObject {
     this.cols = 13;     // 列数cols初始值为13
 
 
-    this.inner_walls_count = 70;  // 内部随机障碍物墙体的数量
+    this.inner_walls_count = 30;  // 内部随机障碍物墙体的数量
     this.walls = [];  // 开辟数组用来存储所有的障碍物墙体
+  }
+
+  // Flood Fill洪水覆盖算法：检验所生成地图的连通性
+  check_connectivity(g, sx, sy, tx, ty) {
+    if (sx == tx && sy == ty)  // 如果发现起点已经等于终点了，返回true
+      return true;
+    g[sx][sy] = true;  // 否则把当前位置标记为已经走过了
+
+    // 定义上、右、下、左（顺时针）四个方向的偏移量
+    let dx = [-1, 0, 1, 0], dy = [0, 1, 0, -1];
+
+    // 枚举一下四个方向，求当前方向的下一个点的坐标是什么
+    for (let i = 0; i < 4; i ++ ) {
+      let x = sx + dx[i], y = sy + dy[i];
+      if (!g[x][y] && this.check_connectivity(g, x, y, tx, ty))   // 如果没有撞墙并且可以搜到终点的话，返回true
+        return true;
+    }
+    // 如果搜不到终点的话，返回false
+    return false;
   }
 
   create_walls() {
@@ -61,6 +80,13 @@ export class GameMap extends AcGameObject {
       }
     }
 
+    // 传状态时需要把状态复制一遍，防止把当前状态给修改掉
+    const copy_g = JSON.parse(JSON.stringify(g));  // 先转化成JSON，再把JSON给解析出来
+
+    // 如果所生成的地图不连通的话，则返回false
+    if (!this.check_connectivity(copy_g, this.rows - 2, 1, 1, this.cols - 2))
+      return false;
+
     // 遍历整个数组g
     for (let r = 0; r < this.rows; r ++ ) {
       for (let c = 0; c < this.cols; c ++ ) {
@@ -69,10 +95,15 @@ export class GameMap extends AcGameObject {
         }
       }
     }
+
+    return true;
   }
 
   start() {
-    this.create_walls();
+    // 随机生成1000次，如果发现成功了就break，否则将会继续循环
+    for (let i = 0; i < 1000; i ++ )
+      if (this.create_walls())
+        break;
   }
 
   // 每一帧都更新一下边长
