@@ -11,16 +11,15 @@ export class GameMap extends AcGameObject {
     this.parent = parent;
 
     // 存每个格子的绝对距离
-    this.L = 0;     // L表示1个单位的长度，整个地图是 13个单位 × 13个单位 
-    this.rows = 13;     // 行数rows初始值为13
-    this.cols = 13;     // 列数cols初始值为13
-
+    this.L = 0;     // L表示1个单位的长度，整个地图是 14个单位 × 13个单位 
+    this.rows = 13;     // 行数rows初始值为13（↓：纵坐标）
+    this.cols = 14;     // 列数cols初始值为14（→：横坐标）
 
     this.inner_walls_count = 30;  // 内部随机障碍物墙体的数量
     this.walls = [];  // 开辟数组用来存储所有的障碍物墙体
   }
 
-  // Flood Fill洪水覆盖算法：检验所生成地图的连通性
+  // Flood Fill洪水覆盖算法：判断所生成地图的连通性
   check_connectivity(g, sx, sy, tx, ty) {
     if (sx == tx && sy == ty)  // 如果发现起点已经等于终点了，返回true
       return true;
@@ -59,8 +58,8 @@ export class GameMap extends AcGameObject {
       g[0][c] = g[this.rows - 1][c] = true;  // 上下两边界加上墙体
     }
 
-    // 轴对称地创建随机障碍物
-    for (let i = 0; i < this.inner_walls_count / 2; i ++ ) {  // 每次随机放两个障碍物，故循环条件需要除以2
+    // 实现中心对称地创建随机障碍物
+    for (let i = 0; i < this.inner_walls_count / 2; i ++ ) {  // 每次随机放两个相互中心对称的障碍物，故循环条件需要除以2
       // 循环1000次，只要有重复的格子就继续随机生成障碍物
       for (let j = 0; j < 1000; j ++ ) {
         // 获取行的随机值：得到(0, this.rows - 1]里的任意一个值
@@ -72,10 +71,10 @@ export class GameMap extends AcGameObject {
         if (r == this.rows - 2 && c == 1 || r == 1 && c == this.cols -2)
           continue;
         // 如果获取的随机值已重复，则继续随机获取
-        if (g[r][c] || g[c][r]) 
+        if (g[r][c] || g[this.rows - 1 - r][this.cols - 1 - c]) 
           continue;
         
-        g[r][c] = g[c][r] = true;
+        g[r][c] = g[this.rows - 1 - r][this.cols - 1 - c] = true;
         break;
       }
     }
