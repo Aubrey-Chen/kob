@@ -1,5 +1,6 @@
 import { AcGameObject } from "./AcGameObject";
 import { Wall } from "./Wall";
+import { Snake } from "./Snake";
 
 export class GameMap extends AcGameObject {
   // 构造函数的两个参数：1. 画布；2. 画布的父元素--用来动态修改画布的长宽。
@@ -9,14 +10,19 @@ export class GameMap extends AcGameObject {
 
     this.ctx = ctx;
     this.parent = parent;
-
     // 存每个格子的绝对距离
     this.L = 0;     // L表示1个单位的长度，整个地图是 14个单位 × 13个单位 
+    
     this.rows = 13;     // 行数rows初始值为13（↓：纵坐标）
     this.cols = 14;     // 列数cols初始值为14（→：横坐标）
 
     this.inner_walls_count = 30;  // 内部随机障碍物墙体的数量
     this.walls = [];  // 开辟数组用来存储所有的障碍物墙体
+
+    this.snakes = [
+      new Snake({id: 0, color: "#4876EC", r: this.rows - 2, c: 1}, this), 
+      new Snake({id: 1, color: "#F94848", r: 1, c: this.cols - 2}, this), 
+    ];
   }
 
   // Flood Fill洪水覆盖算法：判断所生成地图的连通性
