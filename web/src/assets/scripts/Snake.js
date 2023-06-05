@@ -10,14 +10,24 @@ export class Snake extends AcGameObject {
     this.gamemap = gamemap;
 
     this.cells = [new Cell(info.r, info.c)];  // 存放蛇的身体，cell[0]存放蛇头
+
+    this.speed = 5;  // 蛇每秒走5个格子
   }
 
   start() {
 
   }
 
+  update_move() {
+    // 实现让蛇每秒钟向右移动5格：每一帧里面将蛇头的横坐标加上它每一帧移动的距离
+    // this.cells[0].x += this.speed * this.timedelta / 1000;  // 每秒速度 * 每帧秒数
+    // 实现让蛇每秒钟向上移动5格：每一帧里面将蛇头的纵坐标减去它每一帧移动的距离
+    this.cells[0].y -= this.speed * this.timedelta / 1000;  // 每秒速度 * 每帧秒数
+  }
+
   // 每一帧调用一次
   update() {
+    this.update_move();
     this.render();
   }
 
