@@ -2,7 +2,7 @@
   <!-- 游戏计分板 -->
   <div ref="parent" class="gamemap">    <!-- 将parent指向<div>，使两者产生关联 -->
     <!-- 画布 -->
-    <canvas ref="canvas"></canvas>      <!-- 将canvas指向<canvas>，使两者产生关联 -->
+    <canvas ref="canvas" tabindex="0"></canvas>      <!-- 将canvas指向<canvas>，使两者产生关联。添加tabindex="0"输入用户操作 -->
   </div>
 </template>
 

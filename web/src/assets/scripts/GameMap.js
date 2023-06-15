@@ -12,7 +12,7 @@ export class GameMap extends AcGameObject {
     this.parent = parent;
     // 存每个格子的绝对距离
     this.L = 0;     // L表示1个单位的长度，整个地图是 14个单位 × 13个单位 
-    
+
     this.rows = 13;     // 行数rows初始值为13（↓：纵坐标）
     this.cols = 14;     // 列数cols初始值为14（→：横坐标）
 
@@ -104,11 +104,32 @@ export class GameMap extends AcGameObject {
     return true;
   }
 
+  // 获取用户输入信息的绑定事件
+  add_listening_events() {
+    // 为了能让Canvas获取用户的输入，需要先把Canvas进行聚焦
+    this.ctx.canvas.focus();
+    // 把snake取出来
+    const [snake0, snake1] = this.snakes;
+    // 获取用户的信息
+    this.ctx.canvas.addEventListener("keydown", e => {
+      if (e.key === 'w') snake0.set_direction(0);
+      else if (e.key === 'd') snake0.set_direction(1);
+      else if (e.key === 's') snake0.set_direction(2);
+      else if (e.key === 'a') snake0.set_direction(3);
+      else if (e.key === 'ArrowUp') snake1.set_direction(0);
+      else if (e.key === 'ArrowRight') snake1.set_direction(1);
+      else if (e.key === 'ArrowDown') snake1.set_direction(2);
+      else if (e.key === 'ArrowLeft') snake1.set_direction(3);
+    });
+  }
+
   start() {
     // 随机生成1000次，如果发现成功了就break，否则将会继续循环
     for (let i = 0; i < 1000; i ++ )
       if (this.create_walls())
         break;
+
+    this.add_listening_events();
   }
 
   // 每一帧都更新一下边长
@@ -121,10 +142,35 @@ export class GameMap extends AcGameObject {
     this.ctx.canvas.height = this.L * this.rows;
   }
 
+  // 判断两条蛇是否都准备好下一回合：判断两条蛇下一步是否行动，用户双方有没有准备好下一步的操作
+  check_ready() {
+    // 两条蛇都处于静止，同时两条蛇都获取到下一步的操作指令时
+    for (const snake of this.snakes) {
+      // 蛇的状态如果不是静止的话，需要结束当前状态
+      if (snake.status !== "idle") 
+          return false;
+      // 如果这条蛇还没有接收到下一步的指令时
+      if (snake.direction === -1)
+          return false;
+   }
+   return true;
+  }
+
+  // 让两条蛇进入下一回合
+  next_step() {
+    for (const snake of this.snakes) {
+      snake.next_step();
+    }
+  }
+
   update() {
     // update()函数里每一帧都需要渲染
     this.update_size();
-    this.render();  // 每一帧都需要执行一次
+    if (this.check_ready()) {
+      this.next_step();
+    }
+    // 每一帧都需要执行一次
+    this.render();
   }
 
   // 渲染
@@ -142,6 +188,5 @@ export class GameMap extends AcGameObject {
         this.ctx.fillRect(c * this.L, r * this.L, this.L, this.L);
       }
     }
-
   }
 }

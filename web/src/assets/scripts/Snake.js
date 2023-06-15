@@ -11,23 +11,51 @@ export class Snake extends AcGameObject {
 
     this.cells = [new Cell(info.r, info.c)];  // 存放蛇的身体，cell[0]存放蛇头
 
+    this.next_cell = null;  // 下一步的目标位置
+
     this.speed = 5;  // 蛇每秒走5个格子
+
+    // 蛇下一步指令
+    this.direction = -1;  // -1表示没有指令，0、1、2、3表示上、右、下、左四个方向
+    // 蛇的当前状态
+    this.status = "idle";  // idle表示静止，move表示正在移动，die表示死亡
+
+    this.dr = [-1, 0, 1, 0];  // 上、右、下、左四个方向上行的偏移量
+    this.dc = [0, 1, 0, -1];  // 上、右、下、左四个方向上列的偏移量
+
+    this.step = 0;  // 表示当前的回合数
   }
 
   start() {
 
   }
 
-  update_move() {
-    // 实现让蛇每秒钟向右移动5格：每一帧里面将蛇头的横坐标加上它每一帧移动的距离
-    // this.cells[0].x += this.speed * this.timedelta / 1000;  // 每秒速度 * 每帧秒数
-    // 实现让蛇每秒钟向上移动5格：每一帧里面将蛇头的纵坐标减去它每一帧移动的距离
-    this.cells[0].y -= this.speed * this.timedelta / 1000;  // 每秒速度 * 每帧秒数
+  // 定义统一的输入接口，用来设置方向
+  set_direction(d) {
+    this.direction = d;
+    
   }
 
-  // 每一帧调用一次
+  // 将蛇的状态变为走下一步
+  next_step() {
+    const d = this.direction;
+    this.next_cell = new Cell(this.cells[0].r + this.dr[d], this.cells[0].c + this.dc[d]);
+    this.direction = -1;  // 清空操作
+    this.status = "move";
+    this.step ++ ;
+  }
+
+  // 更新蛇的移动
+  update_move() {
+    
+  }
+
+  // 每一帧调用一次，每秒钟执行60次
   update() {
-    this.update_move();
+    if (this.status === 'move') {
+      this.update_move();
+    }
+    
     this.render();
   }
 
