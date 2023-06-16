@@ -14,7 +14,6 @@ export class Snake extends AcGameObject {
     this.next_cell = null;  // 下一步的目标位置
 
     this.speed = 5;  // 蛇每秒走5个格子
-
     // 蛇下一步指令
     this.direction = -1;  // -1表示没有指令，0、1、2、3表示上、右、下、左四个方向
     // 蛇的当前状态
@@ -24,6 +23,7 @@ export class Snake extends AcGameObject {
     this.dc = [0, 1, 0, -1];  // 上、右、下、左四个方向上列的偏移量
 
     this.step = 0;  // 表示当前的回合数
+    this.eps = 1e-2;  // 设置允许的误差：当两个点的误差小于0.01以内时，就认为两个点已经重合了
   }
 
   start() {
@@ -32,22 +32,74 @@ export class Snake extends AcGameObject {
 
   // 定义统一的输入接口，用来设置方向
   set_direction(d) {
-    this.direction = d;
-    
+    this.direction = d; 
+  }
+
+  // 判断当前是否移动蛇尾
+  check_tail_increasing() {  // 检查当前回合，蛇的长度是否增加
+    if (this.step <= 10)  // 前10步，每步移动1位
+      return true;
+    if (this.step % 3 === 1)  // 大于10步，每3步移动1位
+      return true;
+    return false;
   }
 
   // 将蛇的状态变为走下一步
   next_step() {
     const d = this.direction;
+    // 目标点的坐标
     this.next_cell = new Cell(this.cells[0].r + this.dr[d], this.cells[0].c + this.dc[d]);
     this.direction = -1;  // 清空操作
     this.status = "move";
     this.step ++ ;
+
+    // 蛇头前加一个新球，便于蛇的下一步移动
+    const k = this.cells.length;  // 存储组成蛇的所有小球的数量
+    // 把每个小球都向后移动一位
+    for (let i = k; i > 0; i -- ) {
+      // JS里的深层复制：先通过JSON.stringfy()转化成JSON，再通过JSON.parse将JSON解析出来，一定会创建一个新的对象，不会产生重复的问题。
+      this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1]));  // 为了避免JS里赋值时直接赋引用，多个元素是一个引用，相互之间干扰。
+    }
   }
 
   // 更新蛇的移动
   update_move() {
-    
+    const dx = this.next_cell.x - this.cells[0].x;  // dx = 目标点的横坐标-蛇头的横坐标
+    const dy = this.next_cell.y - this.cells[0].y;  // dy = 目标点的横坐标-蛇头的横坐标
+    const distance = Math.sqrt(dx * dx + dy * dy);  // 欧几里得距离 = 开根号√（横坐标之差的平方 + 纵坐标之差的平方）
+
+    // 算一下距离有没有走到终点：因为有误差，故当两个点足够接近时，就判断它们走到一起了
+    if (distance < this.eps) {  // 走到目标点了
+      // 重合：移动到目标点就停下来
+      this.cells[0] = this.next_cell;  // 将目标点作为新的蛇头
+      this.next_cell = null;
+      this.status = "idle";  // 走完了，停下来
+
+      // 如果蛇没有变长
+      if (!this.check_tail_increasing()) {
+        this.cells.pop();// 删掉旧的蛇尾
+      }
+    } else {
+      // 移动
+      const move_distance = this.speed * (this.timedelta / 1000);  // 每两帧之间走的距离
+      // x方向上的偏移量 = md * cos θ = md * (dx / d);
+      this.cells[0].x += move_distance * dx / distance;
+      // y方向上的偏移量 = md * cos θ = md * (dy / d);
+      this.cells[0].y += move_distance * dy / distance;
+
+      // 如果蛇没有变长
+      if (!this.check_tail_increasing()) {
+        const k = this.cells.length;
+        const tail = this.cells[k - 1];
+        const tail_target = this.cells[k - 2];  // 蛇尾的目标，即下一个蛇尾target
+        // 把tail移动到tail_target
+        const tail_dx = tail_target.x - tail.x;  // 两个点之间横坐标的差值
+        const tail_dy = tail_target.y - tail.y;  // 两个点之间纵坐标的差值
+
+        tail.x += move_distance * tail_dx / distance;
+        tail.y += move_distance * tail_dy / distance;
+      }
+    }
   }
 
   // 每一帧调用一次，每秒钟执行60次
@@ -55,7 +107,7 @@ export class Snake extends AcGameObject {
     if (this.status === 'move') {
       this.update_move();
     }
-    
+
     this.render();
   }
 

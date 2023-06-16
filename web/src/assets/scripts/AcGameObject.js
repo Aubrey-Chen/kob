@@ -27,9 +27,9 @@ export class AcGameObject {
   }
 
   destroy() {   // 调用时将对象从全局数组 AC_GAME_OBJECTS 中删除
-    for (let i in AC_GAME_OBJECTS) {
-      this.on_destory();
+    this.on_destory();
 
+    for (let i in AC_GAME_OBJECTS) {
       const obj = AC_GAME_OBJECTS[i];
       if (obj === this) {
         AC_GAME_OBJECTS.splice(i);  // js中从数组里面删除第i个元素
@@ -41,7 +41,7 @@ export class AcGameObject {
 }
 
 // 上一次执行的时刻
-let last_timestamp = performance.now(); // 使用 performance.now() 获取当前时间戳; 
+let last_timestamp = performance.now(); // 可使用last_timestamp = performance.now() 获取当前时间戳; 
 
 const step = timestamp => {
   // 在JS里面用of遍历的是值，用in遍历的是下标
