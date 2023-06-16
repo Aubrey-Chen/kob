@@ -120,8 +120,22 @@ export class Snake extends AcGameObject {
     for (const cell of this.cells) {
       ctx.beginPath();  // 先开启一个路径
       // 画圆弧：圆弧的前两个参数参数是每一个小圆的终点坐标，第三个参数是圆的半径，后两个参数是画圆弧的起始角度和终止角度，要花整个圆弧，所以起始和终止分别是0和2π。
-      ctx.arc(cell.x * L, cell.y * L, L / 2, 0, Math.PI * 2);
+      ctx.arc(cell.x * L, cell.y * L, L / 2 * 0.8, 0, Math.PI * 2);  // 蛇瘦身：半径变成80%
       ctx.fill();
+    }
+
+    // 优化蛇的身体：填充相邻两球中心点切线与直径组成的矩形
+    for (let i = 1; i < this.cells.length; i ++ ) {
+      const a = this.cells[i], b = this.cells[i - 1];  // 枚举相邻两个球
+      if (Math.abs(a.x - b.x) < this.eps && Math.abs(a.y - b.y) < this.eps)  // 两个球重合时continue
+        continue;
+      if (Math.abs(a.x - b.x) < this.eps) {  // 如果是竖直方向上的画法
+        // 待画矩形的左上角横坐标：(x - 0.5 + 0.1) * L，纵坐标：a、b纵坐标的最小值 * L，水平方向的长度：2R * 0.8 = L * 0.8，竖直方向上的长度：a、b纵坐标相差的绝对值 * L
+        ctx.fillRect((a.x - 0.4) * L, Math.min(a.y, b.y) * L, L * 0.8, Math.abs(a.y - b.y) * L);
+      } else {  // 如果是水平方向上的画法
+        // 待画矩形的左上角横坐标：a、b纵坐标的最小值 * L，纵坐标：(y - 0.5 + 0.1) * L，水平方向的长度：a、b横坐标相差的绝对值 * L，竖直方向上的长度：2R * 0.8 = L * 0.8
+        ctx.fillRect(Math.min(a.x, b.x) * L, (a.y - 0.4) * L, Math.abs(a.x - b.x) * L, L * 0.8);
+      }
     }
   }
 }
