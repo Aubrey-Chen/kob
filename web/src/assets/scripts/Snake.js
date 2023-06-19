@@ -24,6 +24,23 @@ export class Snake extends AcGameObject {
 
     this.step = 0;  // 表示当前的回合数
     this.eps = 1e-2;  // 设置允许的误差：当两个点的误差小于0.01以内时，就认为两个点已经重合了
+
+    // 左下角的蛇初始朝上，右上角的蛇初始朝下
+    this.eye_direction = 0;
+    if (this.id === 1) this.eye_direction = 2;
+
+    this.eye_dx = [  // 蛇眼睛不同方向的x的偏移量
+      [-1, 1], 
+      [1, 1], 
+      [1, -1], 
+      [-1, -1], 
+    ];
+    this.eye_dy = [  // 蛇眼睛不同方向的y的偏移量
+      [-1, -1], 
+      [-1, 1], 
+      [1, 1], 
+      [1, -1], 
+    ];
   }
 
   start() {
@@ -49,6 +66,7 @@ export class Snake extends AcGameObject {
     const d = this.direction;
     // 目标点的坐标
     this.next_cell = new Cell(this.cells[0].r + this.dr[d], this.cells[0].c + this.dc[d]);
+    this.eye_direction = d;  // 每次改变方向走下一步时，改变一下蛇头的方向
     this.direction = -1;  // 清空操作
     this.status = "move";
     this.step ++ ;
@@ -121,9 +139,9 @@ export class Snake extends AcGameObject {
     const ctx = this.gamemap.ctx;
     
     ctx.fillStyle = this.color;
-    // 如果蛇去世，颜色变成惨白色
+    // 如果蛇去世，颜色变成幽灵白
     if (this.status === "die") {
-      ctx.fillStyle = "#FFFFFF";
+      ctx.fillStyle = "#F8F8FF";
     }
 
     // 在JS里面，如果是in的话，遍历的是下标；如果是of的话，遍历的是值。 
@@ -146,6 +164,17 @@ export class Snake extends AcGameObject {
         // 待画矩形的左上角横坐标：a、b纵坐标的最小值 * L，纵坐标：(y - 0.5 + 0.1) * L，水平方向的长度：a、b横坐标相差的绝对值 * L，竖直方向上的长度：2R * 0.8 = L * 0.8
         ctx.fillRect(Math.min(a.x, b.x) * L, (a.y - 0.4) * L, Math.abs(a.x - b.x) * L, L * 0.8);
       }
+    }
+
+    // 画蛇的眼睛
+    ctx.fillStyle = "#000000";
+    for (let i = 0; i < 2; i ++ ) {
+      const eye_x = (this.cells[0].x + this.eye_dx[this.eye_direction][i] * 0.18) * L;
+      const eye_y = (this.cells[0].y + this.eye_dy[this.eye_direction][i] * 0.18) * L;
+
+      ctx.beginPath();
+      ctx.arc(eye_x, eye_y, L * 0.06, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 }
