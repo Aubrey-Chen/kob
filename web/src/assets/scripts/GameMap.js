@@ -163,6 +163,30 @@ export class GameMap extends AcGameObject {
     }
   }
 
+  // 检测目标位置是否合法：没有撞到两条蛇的身体和障碍物墙体
+  check_valid(cell) {
+    // 枚举障碍物墙体，判断有没有撞到墙体
+    for (const wall of this.walls) {
+      if (wall.r === cell.r && wall.c === cell.c) 
+        return false;
+    }
+    
+    // 枚举两条蛇的身体，判断有没有撞到身体
+    for (const snake of this.snakes) {
+      let k = snake.cells.length;
+      // 特判蛇头追蛇尾时，蛇尾有没有缩进，如果缩进的话，最后一个格子不用判断了，可以走
+      if (!snake.check_tail_increasing()) {  // 当蛇尾会缩进的时候，蛇尾不用判断
+        k -- ;
+      }
+      for (let i = 0; i < k; i ++ ) {
+        if (snake.cells[i].r === cell.r && snake.cells[i].c === cell.c) 
+          return false;
+      }
+    }
+
+    return true;
+  }
+
   update() {
     // update()函数里每一帧都需要渲染
     this.update_size();

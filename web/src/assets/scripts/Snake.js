@@ -60,6 +60,11 @@ export class Snake extends AcGameObject {
       // JS里的深层复制：先通过JSON.stringfy()转化成JSON，再通过JSON.parse将JSON解析出来，一定会创建一个新的对象，不会产生重复的问题。
       this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1]));  // 为了避免JS里赋值时直接赋引用，多个元素是一个引用，相互之间干扰。
     }
+
+    // 下一步操作非法撞了，蛇瞬间去世
+    if (!this.gamemap.check_valid(this.next_cell)) {
+      this.status = "die";
+    }
   }
 
   // 更新蛇的移动
@@ -116,6 +121,11 @@ export class Snake extends AcGameObject {
     const ctx = this.gamemap.ctx;
     
     ctx.fillStyle = this.color;
+    // 如果蛇去世，颜色变成惨白色
+    if (this.status === "die") {
+      ctx.fillStyle = "#FFFFFF";
+    }
+
     // 在JS里面，如果是in的话，遍历的是下标；如果是of的话，遍历的是值。 
     for (const cell of this.cells) {
       ctx.beginPath();  // 先开启一个路径
