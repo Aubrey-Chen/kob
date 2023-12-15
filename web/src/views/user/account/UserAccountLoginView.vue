@@ -35,6 +35,21 @@ export default {
     let password = ref('');
     let error_message = ref('');
 
+    const jwt_token = localStorage.getItem("jwt_token");
+    if (jwt_token) {
+      // 调用user.js里mutations中更新token的函数
+      store.commit("updateToken", jwt_token);
+      // 验证token的合法性：从云端获取一遍用户信息（actions里的getInfo()函数，传入的两个参数分别为成功/失败后的回调函数）
+      store.dispatch("getInfo", {
+        success() {
+          router.push({ name: "home" });
+        }, 
+        error() {
+
+        }, 
+      });
+    }
+
     // 触发函数login()
     const login = () => {
       error_message.value = "";
@@ -46,7 +61,6 @@ export default {
           store.dispatch("getInfo", {
             success() {
               router.push({name: 'home'});
-              console.log(store.state.user);
             }
           });
         }, 
@@ -54,15 +68,15 @@ export default {
           error_message.value = "用户名或密码错误";
         },  
       });
-    }
+    };
 
     return {
       username, 
       password, 
       error_message,
       login, 
-    }
-  }
+    };
+  }, 
 }; 
 </script>
 
