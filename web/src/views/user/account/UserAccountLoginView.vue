@@ -1,5 +1,5 @@
 <template>
-    <ContentField>
+    <ContentField v-if="!$store.state.user.pulling_info">
       <div class="row justify-content-md-center">
         <div class="col-3">
           <form @submit.prevent="login">
@@ -43,11 +43,15 @@ export default {
       store.dispatch("getInfo", {
         success() {
           router.push({ name: "home" });
+          store.commit("updatePullingInfo", false);
         }, 
         error() {
-
+          // 更新 正在拉取信息的状态 为false
+          store.commit("updatePullingInfo", false);
         }, 
       });
+    } else {
+      store.commit("updatePullingInfo", false);
     }
 
     // 触发函数login()
@@ -73,7 +77,7 @@ export default {
     return {
       username, 
       password, 
-      error_message,
+      error_message, 
       login, 
     };
   }, 

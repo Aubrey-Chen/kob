@@ -7,6 +7,7 @@ export default {
     photo: "", 
     token: "", 
     is_login: false, 
+    pulling_info: true, // 当前是否正在从云端拉取信息
   },
   getters: {
   },
@@ -19,6 +20,9 @@ export default {
     }, 
     updateToken(state, token) {
         state.token = token;
+    }, 
+    updatePullingInfo(state, pulling_info) {
+      state.pulling_info = pulling_info;
     }, 
     logout(state) {
       state.id = ""; 
